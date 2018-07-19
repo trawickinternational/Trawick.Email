@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using Trawick.Common.Email;
 using System.Net;
+using Trawick.Data.Models;
 
 namespace Trawick.Email.EmailHelpers
 {
@@ -14,52 +15,62 @@ namespace Trawick.Email.EmailHelpers
         {
             m_EnrollmentId = MasterEnrollmentId;
         }
-        public EmailResponse SendEnrollmentReceipt()
+        public EmailResponse SendEnrollmentReceipt(int tranType,bool isTest)
         {
             var response = new Trawick.Common.Email.EmailResponse() { };
-            var receiptHtml = GetReceiptString();
-
-            if (!string.IsNullOrEmpty(receiptHtml))
+            try
             {
-                var Enroll = Trawick.Data.Models.EnrollmentRepo.GetById(m_EnrollmentId).Where(m => m.member_relationship_id == 8).FirstOrDefault();
+                var receiptHtml = GetReceiptString();
 
-                if (Enroll != null)
+                if (!string.IsNullOrEmpty(receiptHtml))
                 {
-                    var Agent = Trawick.Data.Models.ContactRepo.Contact_GetById(Enroll.agent_id);
+                    var Enroll = Trawick.Data.Models.EnrollmentRepo.GetById(m_EnrollmentId).Where(m => m.member_relationship_id == 8).FirstOrDefault();
 
-                    var args = new EmailArgs()
+                    if (Enroll != null)
                     {
+                        var Agent = Trawick.Data.Models.ContactRepo.Contact_GetById(Enroll.agent_id);
 
-                        EmailBody = receiptHtml,
-                        IsHtml = true,
-                        EmailSubject = "Insurance Purchase Notification for Member",
-                        MasterEnrollmentId = m_EnrollmentId,
-                        MemberId = Enroll.member_id,
-                        EmailTo = Enroll.email1
-                    };
+                        var args = new EmailArgs()
+                        {
 
-                    //Add BCC
-                    if (Agent.copy_on_enrollment_email && !string.IsNullOrEmpty(Agent.admin_email))
-                    {
-                        args.EmailBCC = Agent.admin_email;
+                            EmailBody = receiptHtml,
+                            IsHtml = true,
+                            EmailSubject = tranType == 1 ? "Insurance Purchase Notification for Member " : "Renewal Receipt for Member ",
+                            MasterEnrollmentId = m_EnrollmentId,
+                            MemberId = Enroll.member_id,
+                            EmailTo = Enroll.email1,
+                            IsTest = isTest
+                        };
+
+                        args.EmailSubject = args.EmailSubject + Enroll.userid.ToString();
+
+                        //Add BCC
+                        if (!string.IsNullOrEmpty(Agent.admin_email) && ((tranType == 1 && Agent.copy_on_enrollment_email) || (tranType == 2 && Agent.copy_on_renewal_emails.GetValueOrDefault())))
+                        {
+                            args.EmailBCC = Agent.admin_email;
+                        }
+
+                        var otherBcc = System.Configuration.ConfigurationManager.AppSettings["MailSender.Bcc"];
+                        if (!string.IsNullOrEmpty(otherBcc))
+                        {
+                            args.EmailBCC += "," + otherBcc;
+                        }
+
+                        var Mailer = Trawick.Common.Email.EmailFactory.GetEmailFactory();
+
+                        return Mailer.SendMail(args);
                     }
-
-                    var otherBcc = System.Configuration.ConfigurationManager.AppSettings["MailSender.Bcc"];
-                    if (!string.IsNullOrEmpty(otherBcc))
-                    {
-                        args.EmailBCC += "," + otherBcc;
-                    }
-
-                    var Mailer = Trawick.Common.Email.EmailFactory.GetEmailFactory();
-
-                    return Mailer.SendMail(args);
                 }
+            }
+            catch(Exception e)
+            {
+                return new EmailResponse() { Message = "Error Creating Email_Cue Record for Enrollment", Status = 99 };
             }
 
             return new EmailResponse() { Message = "Error Creating Email_Cue Record for Enrollment", Status = 99 };
         }
 
-
+       
 
         private string GetReceiptString()
         {
@@ -83,6 +94,27 @@ namespace Trawick.Email.EmailHelpers
             }
             return string.Empty;
 
+        }
+    }
+
+    public class ReceiptHelper
+    {
+        public static int SendFailedReceipts()
+        {
+            var failed = EmailRepo.Email_EnrollmentFailure_GetAll();
+
+            foreach (var item in failed)
+            {
+                var e = new Enrollment(item.Master_enrollment_id.GetValueOrDefault());
+                var response = e.SendEnrollmentReceipt(item.Type.GetValueOrDefault(), false);
+
+                if (response.Message =="Success")
+                {
+                    EmailRepo.Emaill_EnrollmentFailure_Delete(item.ID);
+                }
+
+            }
+            return 1;
         }
     }
 }

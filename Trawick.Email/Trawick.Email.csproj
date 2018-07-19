@@ -76,10 +76,14 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EmailHelpers\Commissions.cs" />
     <Compile Include="EmailHelpers\Enrollment.cs" />
+    <Compile Include="EmailHelpers\MCISAddressSender.cs" />
     <Compile Include="EmailHelpers\MemberWellness.cs" />
     <Compile Include="EmailHelpers\Quote.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

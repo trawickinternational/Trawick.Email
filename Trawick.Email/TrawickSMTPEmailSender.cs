@@ -65,6 +65,36 @@ namespace Trawick.Email
         public TrawickEmailFromDatabaseTableSender() { }
         public EmailResponse SendMail(EmailArgs args)
         {
+
+            if (args.IsTest)
+                args.EmailSubject = string.Format("**Test**{0}**Test**", args.EmailSubject);
+
+            if (Trawick.Data.Models.EmailRepo.Email_Cue_Create(args).email_uid > 0)
+            {
+                return new EmailResponse()
+                {
+                    Message = "Success",
+                    Status = 4
+                };
+            }
+            else
+                return new EmailResponse()
+                {
+                    Message = "Error Creating Mail Object",
+                    Status = 0
+                };
+        }
+    }
+
+
+    public class TestDbEmailSender : Trawick.Common.Interfaces.IEmailSender
+    {
+
+        public TestDbEmailSender() { }
+        public EmailResponse SendMail(EmailArgs args)
+        {
+            args.EmailSubject = string.Format("**Test**{0}**Test**", args.EmailSubject);
+
             if (Trawick.Data.Models.EmailRepo.Email_Cue_Create(args).email_uid > 0)
             {
                 return new EmailResponse()
