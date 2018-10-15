@@ -5,11 +5,13 @@ using System.Web;
 using Trawick.Common.Email;
 using System.Net;
 using Trawick.Data.Models;
+using Common.Logging;
 
 namespace Trawick.Email.EmailHelpers
 {
     public class Enrollment
     {
+        private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private int m_EnrollmentId;
         public Enrollment(int MasterEnrollmentId)
         {
@@ -64,6 +66,8 @@ namespace Trawick.Email.EmailHelpers
             }
             catch(Exception e)
             {
+                log.Error("Error Sending Receipt Email",e);
+
                 return new EmailResponse() { Message = "Error Creating Email_Cue Record for Enrollment", Status = 99 };
             }
 

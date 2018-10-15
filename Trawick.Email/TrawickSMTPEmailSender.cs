@@ -4,18 +4,20 @@ using System.Linq;
 using System.Web;
 using Trawick.Common.Email;
 using System.Net.Mail;
+using Common.Logging;
 
 namespace Trawick.Email
 {
     public class TrawickOffice365EmailSender : Trawick.Common.Interfaces.IEmailSender
     {
+        private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         const String HOST = "smtp.office365.com";
         const int PORT = 587;
 
         public TrawickOffice365EmailSender() { }
         public EmailResponse SendMail(EmailArgs args)
         {
-
+            
             var UserName = System.Configuration.ConfigurationManager.AppSettings["EmailUser"];
             var PWord = System.Configuration.ConfigurationManager.AppSettings["EmailPassword"];
             var FromAddress = System.Configuration.ConfigurationManager.AppSettings["FromEmailAddress"];
@@ -53,6 +55,7 @@ namespace Trawick.Email
 
             catch (Exception e)
             {
+                log.Error("Error in Trawick SMTP Mailer",e);
                 return new EmailResponse { Message = e.Message, Status = 2 };
             }
 
