@@ -103,6 +103,7 @@
     <Compile Include="EmailHelpers\Enrollment.cs" />
     <Compile Include="EmailHelpers\MCISAddressSender.cs" />
     <Compile Include="EmailHelpers\MemberWellness.cs" />
+    <Compile Include="EmailHelpers\PortalContact.cs" />
     <Compile Include="EmailHelpers\Quote.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TrawickSMTPEmailSender.cs" />
