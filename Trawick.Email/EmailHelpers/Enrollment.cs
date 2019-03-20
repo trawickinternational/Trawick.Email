@@ -17,7 +17,7 @@ namespace Trawick.Email.EmailHelpers
         {
             m_EnrollmentId = MasterEnrollmentId;
         }
-        public EmailResponse SendEnrollmentReceipt(int tranType,bool isTest)
+        public EmailResponse SendEnrollmentReceipt(int tranType, bool isTest)
         {
             var response = new Trawick.Common.Email.EmailResponse() { };
             try
@@ -46,6 +46,7 @@ namespace Trawick.Email.EmailHelpers
 
                         args.EmailSubject = args.EmailSubject + Enroll.userid.ToString();
 
+
                         //Add BCC
                         if (!string.IsNullOrEmpty(Agent.admin_email) && ((tranType == 1 && Agent.copy_on_enrollment_email) || (tranType == 2 && Agent.copy_on_renewal_emails.GetValueOrDefault())))
                         {
@@ -64,9 +65,9 @@ namespace Trawick.Email.EmailHelpers
                     }
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
-                log.Error("Error Sending Receipt Email",e);
+                log.Error("Error Sending Receipt Email", e);
 
                 return new EmailResponse() { Message = "Error Creating Email_Cue Record for Enrollment", Status = 99 };
             }
@@ -74,7 +75,25 @@ namespace Trawick.Email.EmailHelpers
             return new EmailResponse() { Message = "Error Creating Email_Cue Record for Enrollment", Status = 99 };
         }
 
-       
+        public EmailResponse SendEnrollmentReceiptWithArgs(EmailArgs args)
+        {
+            var response = new Trawick.Common.Email.EmailResponse() { };
+            try
+            {
+                var receiptHtml = GetReceiptString();
+                args.EmailBody = receiptHtml;
+                args.MasterEnrollmentId = this.m_EnrollmentId;
+                var Mailer = Trawick.Common.Email.EmailFactory.GetEmailFactory();
+
+                return Mailer.SendMail(args);
+            }
+            catch (Exception e)
+            {
+                log.Error("Error Sending Receipt Email", e);
+
+                return new EmailResponse() { Message = "Error Creating Email_Cue Record for Enrollment", Status = 99 };
+            }
+        }
 
         private string GetReceiptString()
         {
@@ -94,7 +113,7 @@ namespace Trawick.Email.EmailHelpers
             catch (Exception e)
             {
                 throw;
-              
+
             }
             return string.Empty;
 
@@ -112,7 +131,7 @@ namespace Trawick.Email.EmailHelpers
                 var e = new Enrollment(item.Master_enrollment_id.GetValueOrDefault());
                 var response = e.SendEnrollmentReceipt(item.Type.GetValueOrDefault(), false);
 
-                if (response.Message =="Success")
+                if (response.Message == "Success")
                 {
                     EmailRepo.Emaill_EnrollmentFailure_Delete(item.ID);
                 }
