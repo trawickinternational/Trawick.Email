@@ -104,7 +104,7 @@
     <Compile Include="EmailHelpers\Enrollment.cs" />
     <Compile Include="EmailHelpers\MCISAddressSender.cs" />
     <Compile Include="EmailHelpers\MemberWellness.cs" />
-    <Compile Include="EmailHelpers\SendEmailWithArgs.cs" />
+    <Compile Include="EmailHelpers\EnrollmentCancellationRequest.cs" />
     <Compile Include="EmailHelpers\PortalContact.cs" />
     <Compile Include="EmailHelpers\Quote.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
