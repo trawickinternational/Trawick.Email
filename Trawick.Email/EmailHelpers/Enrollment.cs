@@ -112,6 +112,7 @@ namespace Trawick.Email.EmailHelpers
             }
             catch (Exception e)
             {
+                log.ErrorFormat("Error Retreiving Receipt for {0}", e, m_EnrollmentId.ToString());
                 throw;
 
             }
