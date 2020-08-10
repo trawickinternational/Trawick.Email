@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using Trawick.Common.Email;
+using Trawick.Data.Models;
 
 namespace Trawick.Email.EmailHelpers
 {
@@ -25,10 +26,20 @@ namespace Trawick.Email.EmailHelpers
             string title = string.Format("<h5>{0}</h5>", subject);
             message = body;
 
+            string ccEmail = "";
+            if (request.CopyAgent)
+            {
+                var agent = ContactRepo.Contact_GetById(request.AgentId);
+                if (agent != null && !string.IsNullOrEmpty(agent.admin_email))
+                {
+                    ccEmail = agent.admin_email;
+                }
+            }
+
             var args = new Common.Email.EmailArgs()
             {
                 EmailBody = message,
-                EmaillCC = "",
+                EmaillCC = ccEmail,
                 EmailTo = toEmail,
                 EmailSubject = subject,
                 IsHtml = true
@@ -57,10 +68,20 @@ namespace Trawick.Email.EmailHelpers
             string title = string.Format("<h5>{0}</h5>", subject);
             message = body;
 
+            string ccEmail = "";
+            if (request.CopyAgent)
+            {
+                var agent = ContactRepo.Contact_GetById(request.AgentId);
+                if (agent != null && !string.IsNullOrEmpty(agent.admin_email))
+                {
+                    ccEmail = agent.admin_email;
+                }
+            }
+
             var args = new Common.Email.EmailArgs()
             {
                 EmailBody = message,
-                EmaillCC = "",
+                EmaillCC = ccEmail,
                 EmailTo = toEmail,
                 EmailSubject = subject,
                 IsHtml = true
