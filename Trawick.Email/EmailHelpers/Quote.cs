@@ -11,6 +11,11 @@ namespace Trawick.Email.EmailHelpers
         public static Trawick.Common.Email.EmailResponse SendQuoteEmail(EmailArgs args)
         {
             var response = new Trawick.Common.Email.EmailResponse() { };
+
+
+
+
+
             response = Trawick.Common.Email.EmailFactory.GetEmailFactory().SendMail(args);
             return response;
         }

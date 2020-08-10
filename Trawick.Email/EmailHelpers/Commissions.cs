@@ -23,7 +23,7 @@ namespace Trawick.Email.EmailHelpers
                 var args = new EmailArgs()
                 {
                     EmailTo = model.commEmail,
-                    EmaillCC = "info@trawickinternational.com,sdobbins@trawickinternational.com,sturner@trawickinternational.com",
+                    EmaillCC = "info@trawickinternational.com,sdobbins@trawickinternational.com,cnolen@trawickinternational.com",
                     EmailSubject = "Commission Reports for Previous Month",
                     IsHtml = true,
                     EmailBody = body
