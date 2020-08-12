@@ -17,7 +17,7 @@ namespace Trawick.Email.EmailHelpers
                 EmailSubject = "'Addresses for " + DateTime.Now.AddDays(-1).ToShortDateString() + "',",
                 IsHtml = true,
                 EmaillCC = "sdobbins@trawickinternational.com",
-                EmailTo = "contact@multichoiceinsurance.com",
+                EmailTo = "Addresses@visitorplans.com",
                 IsTest = false
             };
 
