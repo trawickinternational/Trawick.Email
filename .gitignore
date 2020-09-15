@@ -1,5 +1,5 @@
 /Trawick.Email/bin
 /Trawick.Email/obj
-/Trawick.Email/*.user
 /packages
-/.gitignore
+/.vs
+_bak
